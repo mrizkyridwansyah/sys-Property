@@ -1,4 +1,4 @@
-if(process.env.NODE_ENV !== 'production') require('dotenv').config()
+require('dotenv').config()
 const jwt = require('jsonwebtoken')
 
 async function saveData(data) {
@@ -38,4 +38,6 @@ async function getDataById(Data, id){
 async function generateAccessToken(data) {
     return await jwt.sign(data, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "20m"})
 }
+
+
 module.exports =  { getAllData, saveData, getDataById, deleteData, generateAccessToken }

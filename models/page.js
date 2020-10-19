@@ -13,7 +13,7 @@ const pageSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    role: {
+    role_id: {
         type: String,
         required: true
     },
