@@ -17,11 +17,12 @@ module.exports = async (req, res, next) => {
         await jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
             if(err) return new Error("Something Wrong")            
             req.role_id = user.role_id
+            req.isAuth = true
         })     
     } catch (err){
         req.isAuth = false
         return next()
     }
-    req.isAuth = true
+
     next()
 }

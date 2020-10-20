@@ -2,7 +2,6 @@ POST http://localhost:5000/graphql HTTP/1.1
 Content-Type: application/json
 Cache-Control: no-cache
 Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1yaXpreUBnbWFpbC5jb20iLCJyb2xlX2lkIjoiNWY4YjEwNzE1OTRjZmIyY2Q4MDBjMTYzIiwiaWF0IjoxNjAzMDkxNzA5LCJleHAiOjE2MDMwOTI5MDl9.j1kzQ--2_vAaH7YMFCJYUdUImQ_plO2Kbh3W5YelznI
-
 {
     "query" : "query{agents{id, name}}"         
 }

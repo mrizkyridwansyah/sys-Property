@@ -36,7 +36,7 @@ async function getDataById(Data, id){
 }
 
 async function generateAccessToken(data) {
-    return await jwt.sign(data, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "20m"})
+    return await jwt.sign(data, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "10h"})
 }
 
 

@@ -1,4 +1,4 @@
-const { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLNonNull, GraphQLBoolean } = require("graphql");
+const { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLNonNull, GraphQLBoolean, GraphQLID } = require("graphql");
 const { agentObjType, customerObjType, unitObjType, contractObjType, userObjType, roleObjType, pageObjType } = require('./child')
 const Agent = require('../../models/agent')
 const Customer = require('../../models/customer')
@@ -7,7 +7,7 @@ const Contract = require('../../models/contract')
 const User = require('../../models/user')
 const Role = require('../../models/role')
 const Page = require('../../models/page')
-const { getAllData } = require('../../routes')
+const { getAllData, getDataById } = require('../../routes')
 
 const rootQueryObjType = new GraphQLObjectType({
     name: 'RootQuery',
@@ -134,7 +134,84 @@ const rootQueryObjType = new GraphQLObjectType({
                                 }
                 return await getAllData(Page, search)
             }
-        }
+        },
+        agent: {
+            type: agentObjType,
+            description: "Get an Agent",
+            args: {
+                id: { type: GraphQLNonNull(GraphQLID)}
+            },
+            resolve: async (parent, args, req) => {
+                if(!req.auth) return new Error("Unauthorized")
+                return await getDataById(Agent, args.id)
+            }
+        },
+        customer: {
+            type: customerObjType,
+            description: "Get a Customer",
+            args: {
+                id: { type: GraphQLNonNull(GraphQLID)}
+            },
+            resolve: async (parent, args, req) => {
+                if(!req.auth) return new Error("Unauthorized")
+                return await getDataById(Customer, args.id)
+            }
+        },
+        unit: {
+            type: unitObjType,
+            description: "Get a Unit",
+            args: {
+                id: { type: GraphQLNonNull(GraphQLID)}
+            },
+            resolve: async (parent, args, req) => {
+                if(!req.auth) return new Error("Unauthorized")
+                return await getDataById(Unit, args.id)
+            }
+        },
+        contract: {
+            type: contractObjType,
+            description: "Get a Contract",
+            args: {
+                id: { type: GraphQLNonNull(GraphQLID)}
+            },
+            resolve: async (parent, args, req) => {
+                if(!req.auth) return new Error("Unauthorized")
+                return await getDataById(Contract, args.id)
+            }
+        },
+        user: {
+            type: userObjType,
+            description: "Get a User",
+            args: {
+                id: { type: GraphQLNonNull(GraphQLID)}
+            },
+            resolve: async (parent, args, req) => {
+                if(!req.auth) return new Error("Unauthorized")
+                return await getDataById(User, args.id)
+            }
+        },
+        role: {
+            type: roleObjType,
+            description: "Get a Role",
+            args: {
+                id: { type: GraphQLNonNull(GraphQLID)}
+            },
+            resolve: async (parent, args, req) => {
+                if(!req.auth) return new Error("Unauthorized")
+                return await getDataById(Role, args.id)
+            }
+        },
+        page: {
+            type: pageObjType,
+            description: "Get a Page",
+            args: {
+                id: { type: GraphQLNonNull(GraphQLID)}
+            },
+            resolve: async (parent, args, req) => {
+                if(!req.auth) return new Error("Unauthorized")
+                return await getDataById(Page, args.id)
+            }
+        },
     })
 })
 

@@ -4,6 +4,7 @@ const express = require('express')
 const { graphqlHTTP } = require('express-graphql')
 const { GraphQLSchema, GraphQLObjectType } = require('graphql')
 const mongoose = require('mongoose')
+const cors = require('cors')
 const app = express()
 
 mongoose.connect(process.env.DATABASE_URL, {
@@ -23,15 +24,30 @@ const schema = new GraphQLSchema({
     mutation: mutationSchema
 })
 
-if(process.env.NODE_ENV !== 'production') app.use(isAuth)
 
-app.use('/graphql', graphqlHTTP((req) => {    
-    return {
+var whitelist = ['http://localhost:3000']
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
+
+app.use(cors(corsOptions))
+if(process.env.NODE_ENV !== 'production'){
+  // console.log(process.env.NODE_ENV)
+  app.use(isAuth)
+} 
+app.use('/graphql', graphqlHTTP((req) => {
+  return {
         schema: schema,
         graphiql: process.env.NODE_ENV === 'development',//graphiql will show if on development
-        context: { auth: req.isAuth || true }
+        context: { auth: process.env.NODE_ENV !== 'production' ? req.isAuth : true }
     }
 }))
 
-const PORT = process.env.PORT || 5000//5000 for Development, and env.PORT for production 
+const PORT = process.env.PORT || 5000 //for Development, and env.PORT for production 
 app.listen(PORT, () => console.log(`Server Running on PORT ${PORT}`))
