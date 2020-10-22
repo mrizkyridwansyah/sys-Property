@@ -21,14 +21,18 @@ const rootMutationObjType = new GraphQLObjectType({
             description: 'Add new Agent',
             args: {
                 name: { type: GraphQLNonNull(GraphQLString) },
-                sales_code: { type: GraphQLNonNull(GraphQLString) }
+                sales_code: { type: GraphQLNonNull(GraphQLString) },
+                create_by: { type: GraphQLNonNull(GraphQLID) },
+                update_by: { type: GraphQLNonNull(GraphQLID) }
             },
             resolve: async (parent, args, req) => {
                 if(!req.auth) return new Error("Unauthorized")
                 const newAgent = new Agent ({
                     name: args.name,
                     sales_code: args.sales_code,
-                    create_at: args.create_at
+                    create_at: Date.now(),
+                    create_by: args.create_by,
+                    update_by: args.update_by
                 })
                 return await saveData(newAgent)
             }         
@@ -38,13 +42,18 @@ const rootMutationObjType = new GraphQLObjectType({
             description: 'Add new Customer',
             args: {
                 name: { type: GraphQLNonNull(GraphQLString) },
-                customer_code: { type: GraphQLNonNull(GraphQLString) }
+                customer_code: { type: GraphQLNonNull(GraphQLString) },
+                create_by: { type: GraphQLNonNull(GraphQLID) },
+                update_by: { type: GraphQLNonNull(GraphQLID) }
             },
             resolve: async(parent, args, req) => {
                 if(!req.auth) return new Error("Unauthorized")
                 const newCustomer = new Customer({
                     name: args.name,
-                    customer_code: args.customer_code
+                    customer_code: args.customer_code,
+                    create_at: Date.now(),
+                    create_by: args.create_by,
+                    update_by: args.update_by
                 })
                 return await saveData(newCustomer)
             }
@@ -56,13 +65,18 @@ const rootMutationObjType = new GraphQLObjectType({
                 unit_number: { type: GraphQLNonNull(GraphQLString)},
                 surface_area: { type: GraphQLNonNull(GraphQLInt)},
                 building_area: { type: GraphQLNonNull(GraphQLInt)},
+                create_by: { type: GraphQLNonNull(GraphQLID) },
+                update_by: { type: GraphQLNonNull(GraphQLID) }
             },
             resolve: async (parent, args, req) => {
                 if(!req.auth) return new Error("Unauthorized")
                 const newUnit = new Unit({
                     unit_number: args.unit_number,
                     surface_area: args.surface_area,
-                    building_area: args.building_area
+                    building_area: args.building_area,
+                    create_at: Date.now(),
+                    create_by: args.create_by,
+                    update_by: args.update_by
                 })
                 return await saveData(newUnit)
             }
@@ -76,6 +90,8 @@ const rootMutationObjType = new GraphQLObjectType({
                 customer_id: { type: GraphQLNonNull(GraphQLID)},
                 unit_id: { type: GraphQLNonNull(GraphQLID)},
                 contract_date: { type: GraphQLNonNull(GraphQLString)},
+                create_by: { type: GraphQLNonNull(GraphQLID) },
+                update_by: { type: GraphQLNonNull(GraphQLID) }
             },
             resolve: async (parent, args, req) => {
                 if(!req.auth) return new Error("Unauthorized")
@@ -84,11 +100,14 @@ const rootMutationObjType = new GraphQLObjectType({
                 if(unit.available){
                     try{
                         const newContract = new Contract({
-                        contract_number: args.contract_number,
-                        agent_id: args.agent_id,
-                        customer_id: args.customer_id,
-                        unit_id: args.unit_id,
-                        contract_date: new Date(args.contract_date).toISOString()
+                            contract_number: args.contract_number,
+                            agent_id: args.agent_id,
+                            customer_id: args.customer_id,
+                            unit_id: args.unit_id,
+                            contract_date: new Date(args.contract_date).toISOString(),
+                            create_at: Date.now(),
+                            create_by: args.create_by,
+                            update_by: args.update_by
                         })
                         unit.available = false
                         await saveData(unit)
@@ -139,7 +158,8 @@ const rootMutationObjType = new GraphQLObjectType({
             args: {
                 id: { type: GraphQLNonNull(GraphQLID)},
                 name: { type: GraphQLString },
-                sales_code: { type: GraphQLString }
+                sales_code: { type: GraphQLString },
+                update_by: { type: GraphQLNonNull(GraphQLID) }
             },
             resolve: async (parent, args, req) => {
                 if(!req.auth) return new Error("Unauthorized")
@@ -147,6 +167,8 @@ const rootMutationObjType = new GraphQLObjectType({
                 if(!agent) return new Error("No Data Agent. Data maybe has been deleted")
                 if(args.name !== null && args.name !== undefined) agent.name = args.name
                 if(args.sales_code !== null && args.sales_code !== undefined) agent.sales_code = args.sales_code
+                agent.update_at = Date.now()
+                agent.update_by = args.update_by
                 return await saveData(agent)
             }
         },
@@ -157,6 +179,7 @@ const rootMutationObjType = new GraphQLObjectType({
                 id: { type: GraphQLNonNull(GraphQLID)},
                 name: { type: GraphQLString },
                 customer_code: { type: GraphQLString },
+                update_by: { type: GraphQLNonNull(GraphQLID) }
             },
             resolve: async(parent, args, req) => {
                 if(!req.auth) return new Error("Unauthorized")
@@ -164,6 +187,8 @@ const rootMutationObjType = new GraphQLObjectType({
                 if(!customer) return new Error("No Data Customer. Data maybe has been deleted")                    
                 if(args.name !== null && args.name !== undefined) customer.name = args.name
                 if(args.customer_code !== null && args.customer_code !== undefined) customer.customer_code= args.customer_code
+                customer.update_at = Date.now()
+                customer.update_by = args.update_by
                 return await saveData(customer)
             }
         },
@@ -175,7 +200,8 @@ const rootMutationObjType = new GraphQLObjectType({
                 unit_number: { type: GraphQLString },
                 surface_area: { type: GraphQLInt },
                 building_area: { type: GraphQLInt },
-                available: { type: GraphQLBoolean }
+                available: { type: GraphQLBoolean },
+                update_by: { type: GraphQLNonNull(GraphQLID) }
             },
             resolve: async(parent, args, req) => {
                 if(!req.auth) return new Error("Unauthorized")
@@ -185,6 +211,8 @@ const rootMutationObjType = new GraphQLObjectType({
                 if(args.surface_area !== null && args.surface_area !== undefined) unit.surface_area = args.surface_area
                 if(args.building_area !== null && args.building_area !== undefined) unit.building_area = args.building_area
                 if(args.available !== null && args.available !== undefined) unit.available = args.available
+                unit.update_at = Date.now()
+                unit.update_by = args.update_by
                 return await saveData(unit)
             }
         },
@@ -196,7 +224,8 @@ const rootMutationObjType = new GraphQLObjectType({
                 agent_id: { type: GraphQLID},
                 customer_id: { type: GraphQLID},
                 unit_id: { type: GraphQLID},
-                contract_date : { type: GraphQLString}
+                contract_date : { type: GraphQLString},
+                update_by: { type: GraphQLNonNull(GraphQLID) }
             },
             resolve: async(parent, args, req) => {
                 if(!req.auth) return new Error("Unauthorized")
@@ -206,22 +235,25 @@ const rootMutationObjType = new GraphQLObjectType({
                 if(!newUnit) return new Error("No Data Next Unit. Data maybe has been deleted")
                 if(args.agent_id !== null && args.agent_id !== undefined) contract.agent_id = args.agent_id
                 if(args.contract_date !== null && args.contract_date !== undefined) contract.contract_date = new Date(args.contract_date).toISOString()
-                if(args.customer_id !== null && args.customer_id !== undefined) contract.customer_id = args.customer_id
+                if(args.customer_id !== null && args.customer_id !== undefined) contract.customer_id = args.customer_id        
+
                 if( args.unit_id !== null && 
                     args.unit_id !== undefined && 
-                    args.unit_id !== contract.unit_id && 
-                    newUnit.available)
-                    {                    
+                    args.unit_id != contract.unit_id)
+                {                    
+                    if(!newUnit.available)return new Error("Unit Not Available")
+
                     const oldUnit = await getDataById(Unit, contract.unit_id)
                     if(!oldUnit) return new Error("No Data Previous Unit. Data maybe has been deleted")
                     oldUnit.available = true
                     newUnit.available = false
-                    contract.unit_id = args.unit_id
                     await saveData(oldUnit)
                     await saveData(newUnit)
-                } else {
-                    return new Error("Unit Not Available")
                 }
+
+                contract.unit_id = args.unit_id
+                contract.update_at = Date.now()
+                contract.update_by = args.update_by
 
                 return await saveData(contract)
             }
@@ -362,7 +394,6 @@ const rootMutationObjType = new GraphQLObjectType({
                 if(users.length === 0) return new Error("Log In Failed! Email not registered")                
                 const user = users[0]
                 if(!user.is_active) return new Error("Log In Failed! User has been blocked")
-                if(user.access_token && user.refresh_token) return new Error("Log In Failed! User has been logged in")
                 let messageError = ""     
                 if(await bcrypt.compare(args.password, user.password)) {
                     const dataUser = {
@@ -384,7 +415,12 @@ const rootMutationObjType = new GraphQLObjectType({
                 await saveData(user)
                 
                 if(user.access_token !== null && user.access_token !== undefined){
-                    return { access_token: user.access_token, refresh_token: user.refresh_token }
+                    return { 
+                        user_id: user.id, 
+                        role_id: user.role_id, 
+                        access_token: user.access_token, 
+                        refresh_token: user.refresh_token 
+                    }
                 } else {
                     console.log(user)
                     return new Error(`Log In Failed! ${messageError}`)
@@ -444,6 +480,24 @@ const rootMutationObjType = new GraphQLObjectType({
                 } else {
                     return new Error(messageError)
                 }
+            }
+        },
+        cancelContract: {
+            type: contractObjType,
+            args: {
+                id: { type: GraphQLNonNull(GraphQLID)},   
+                update_by: { type: GraphQLNonNull(GraphQLID)}
+            },
+            resolve: async (parent, args) => {
+                const contract = await getDataById(Contract, args.id)
+                if(!contract) return new Error("No Data Contract. Data maybe has been deleted")
+                contract.is_active = false
+                contract.update_by = args.update_by
+                const unit = await getDataById(Unit, contract.unit_id)
+                if(!unit) return new Error("No Data Unit. Data maybe has been deleted")
+                unit.available = true
+                await saveData(unit)
+                return await saveData(contract)
             }
         }
     })

@@ -37,11 +37,11 @@ const contractSchema = mongoose.Schema({
     create_by: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        // required: true
     },
     update_at: {
         type: Date,
-        required: true,
+        // required: true,
         default: Date.now
     },
     update_by: {

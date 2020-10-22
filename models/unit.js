@@ -26,7 +26,7 @@ const unitSchema = mongoose.Schema({
     create_by: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        // required: true
     },
     update_at: {
         type: Date,
@@ -36,7 +36,7 @@ const unitSchema = mongoose.Schema({
     update_by: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        // required: true
     }
 })
 

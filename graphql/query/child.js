@@ -11,27 +11,33 @@ const { getAllData, getDataById } = require('../../routes')
 const userObjType = new GraphQLObjectType({
     name: 'Users',
     description: 'List of Users',
-    fields: {
+    fields: () => ({
         id: { type: GraphQLNonNull(GraphQLID)},
         email: { type: GraphQLNonNull(GraphQLString)},
         role_id: { type: GraphQLNonNull(GraphQLID)},
+        role: { 
+            type: roleObjType,
+            resolve: async (user) => {
+                return await getDataById(Role, user.role_id)  
+            }    
+        },    
         wrong_password: { type: GraphQLNonNull(GraphQLInt)},
         is_active: { type: GraphQLNonNull(GraphQLBoolean)},
         create_at: { 
             type: GraphQLNonNull(GraphQLString),
             resolve: (user) => { return user.create_at.toISOString().split('T')[0] }
-        },
+        },    
         update_at: { 
             type: GraphQLNonNull(GraphQLString),
             resolve: (user) => { return user.update_at.toISOString().split('T')[0] }
-        }
-    }
-})
+        }    
+    })  
+})    
 
 const roleObjType = new GraphQLObjectType({
     name: 'Roles',
     description: 'List of Roles',
-    fields: {
+    fields: () => ({
         id: { type: GraphQLNonNull(GraphQLID)},
         name: { type: GraphQLNonNull(GraphQLString)},
         create_at: { 
@@ -42,13 +48,13 @@ const roleObjType = new GraphQLObjectType({
             type: GraphQLNonNull(GraphQLString),
             resolve: (role) => { return role.update_at.toISOString().split('T')[0] }
         }
-    }
+    })
 })
 
 const pageObjType = new GraphQLObjectType({
     name: 'Pages',
     description: 'List of Pages',
-    fields: {
+    fields: () => ({
         id: { type: GraphQLNonNull(GraphQLID)},
         name: { type: GraphQLNonNull(GraphQLString)},
         type: { type: GraphQLNonNull(GraphQLString)},
@@ -63,7 +69,7 @@ const pageObjType = new GraphQLObjectType({
         },
         create_at: { type: GraphQLNonNull(GraphQLString)},
         update_at: { type: GraphQLNonNull(GraphQLString)},
-    }
+    })
 })
 
 const agentObjType = new GraphQLObjectType({
@@ -253,6 +259,8 @@ const contractObjType = new GraphQLObjectType({
 const tokenObjType = new GraphQLObjectType({
     name: 'Token',
     fields: () => ({
+        user_id: { type: GraphQLNonNull(GraphQLID)},
+        role_id: { type: GraphQLNonNull(GraphQLID)},
         access_token: { type: GraphQLNonNull(GraphQLString)},
         refresh_token: { type: GraphQLNonNull(GraphQLString)},
     })

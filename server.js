@@ -25,7 +25,7 @@ const schema = new GraphQLSchema({
 })
 
 
-var whitelist = ['http://localhost:3000']
+var whitelist = ['http://localhost:3000','http://localhost:6000']
 var corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
@@ -37,10 +37,8 @@ var corsOptions = {
 }
 
 app.use(cors(corsOptions))
-if(process.env.NODE_ENV !== 'production'){
-  // console.log(process.env.NODE_ENV)
-  app.use(isAuth)
-} 
+if(process.env.NODE_ENV !== 'production') app.use(isAuth)
+
 app.use('/graphql', graphqlHTTP((req) => {
   return {
         schema: schema,

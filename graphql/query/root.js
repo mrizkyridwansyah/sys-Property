@@ -72,21 +72,16 @@ const rootQueryObjType = new GraphQLObjectType({
             },
             resolve: async (parent, args, req) => {
                 if(!req.auth) return new Error("Unauthorized")
-                let search = { $or: [ ]}
-                search.$or.push({ contract_number: new RegExp(args.search, 'i')})
+                let search = { contract_number: new RegExp(args.search, 'i')}
                 
-                if(args.active !== null && args.active !== undefined) {
-                    search.$or.push({ is_active: args.active})
-                }
-                if(args.dateFrom !== null && args.dateTo !== null && args.dateFrom !== "" && args.dateFrom !== "" && args.dateFrom !== undefined && args.dateTo !== undefined) 
-                {
-                    search.$or.push({ 
-                        contract_date: {
-                            $gte: new Date(args.dateFrom).toISOString(),
-                            $lt: new Date(args.dateTo).toISOString()
-                        }
-                    })
-                }
+                if(args.active !== null && args.active !== undefined) search.is_active= args.active            
+                let searchDate = {}
+                if(args.dateFrom !== null && args.dateFrom !== "" && args.dateFrom !== undefined) searchDate.$gte = new Date(args.dateFrom).toISOString()
+
+                if(args.dateTo !== null && args.dateTo !== "" && args.dateTo !== undefined) searchDate.$lt = new Date(args.dateTo).toISOString()
+
+                if(Object.keys(searchDate).length > 0) search.contract_date = searchDate
+
                 return await getAllData(Contract,search)
             }
         },
@@ -99,8 +94,8 @@ const rootQueryObjType = new GraphQLObjectType({
             },
             resolve: async (parent, args, req) => {
                 if(!req.auth) return new Error("Unauthorized")
-                let search = { $or: [{ email: new RegExp(args.email, 'i') }] }
-                if(args.active !== null && args.active !== undefined) search.$or.push({ is_active: args.active})
+                let search = { email: new RegExp(args.email, 'i') }
+                if(args.active !== null && args.active !== undefined) search.is_active= args.active
                 return await getAllData(User, search)
             }
         },
